@@ -29,7 +29,6 @@ const WEATHER_IMPACT_SCORES = {
 export async function getWeatherAnalysis(lat, lon, startDate, endDate) {
   try {
     console.log("Starting weather analysis with params:", { lat, lon, startDate, endDate });
-    console.log("OpenWeatherMap API Key present:", !!OPENWEATHERMAP_API_KEY);
 
     // Get 5-day forecast with 3-hour intervals
     const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OPENWEATHERMAP_API_KEY}&units=metric`;
@@ -70,7 +69,7 @@ export async function getWeatherAnalysis(lat, lon, startDate, endDate) {
       precipitation: analyzePrecipitation(forecasts),
       wind: analyzeWind(forecasts),
       conditions: analyzeConditions(forecasts),
-      alerts: allAlerts, // Use combined alerts
+      alerts: allAlerts,
       impactScore: calculateImpactScore(forecasts),
       trends: analyzeTrends(forecasts),
     };
@@ -95,12 +94,12 @@ function analyzeTemperature(forecasts) {
 }
 
 function analyzePrecipitation(forecasts) {
-  const precipChances = forecasts.map((f) => f.rain?.["3h"] || 0);
+  const precip = forecasts.map((f) => f.rain?.["3h"] || 0);
   return {
-    average: precipChances.reduce((a, b) => a + b, 0) / precipChances.length,
-    max: Math.max(...precipChances),
-    trend: calculateTrend(precipChances),
-    alerts: generatePrecipitationAlerts(precipChances),
+    average: precip.reduce((a, b) => a + b, 0) / precip.length,
+    max: Math.max(...precip),
+    trend: calculateTrend(precip),
+    alerts: generatePrecipitationAlerts(precip),
   };
 }
 

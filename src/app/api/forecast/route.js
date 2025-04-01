@@ -1,10 +1,11 @@
 // src/app/api/forecast/route.js
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
 import { openai } from "@/lib/openai";
+import { getWeatherAnalysis } from "@/lib/weatherAnalysis";
+import { getSchoolVacationPeriods, getHistoricalPatterns } from "@/lib/schoolVacations";
+import { connectToDatabase } from "@/lib/mongodb";
 import { getHolidaysInRange, getMajorEventsInRange } from "@/lib/holidays";
 import { getHolidaysWithFallback } from "@/lib/googleCalendar";
-import { getWeatherAnalysis } from "@/lib/weatherAnalysis";
 
 const OPENWEATHERMAP_API_KEY = process.env.OPENWEATHERMAP_API_KEY;
 const CACHE_DURATION_HOURS = 6; // How long to cache results
@@ -26,22 +27,22 @@ const locations = {
 
 export async function POST(request) {
   try {
-    const { location: locationKey, startDate, endDate } = await request.json();
-    console.log("API Request:", { locationKey, startDate, endDate }); // Debug log
+    const { location, startDate, endDate } = await request.json();
+    console.log("API Request:", { location, startDate, endDate });
 
-    if (!locationKey || !startDate || !endDate) {
+    if (!location || !startDate || !endDate) {
       return NextResponse.json(
         { error: "Missing required fields: location, startDate, endDate" },
         { status: 400 }
       );
     }
 
-    const locationData = locations[locationKey.toLowerCase()];
+    const locationData = locations[location.toLowerCase()];
     if (!locationData) {
       return NextResponse.json({ error: "Invalid location specified" }, { status: 400 });
     }
 
-    const cacheKey = `${locationKey}-${startDate}-${endDate}`;
+    const cacheKey = `${location}-${startDate}-${endDate}`;
     const { db } = await connectToDatabase();
     const cacheCollection = db.collection("forecastCache");
 
@@ -102,21 +103,25 @@ export async function POST(request) {
       weatherSummary = `Weather data unavailable: ${error.message}`;
     }
 
-    // 3. Get Holidays & Events
+    // 3. Fetch Holidays and Events
     const holidays = await getHolidaysWithFallback(locationData.countryCode, startDate, endDate);
-    const events = getMajorEventsInRange(locationData.countryCode, startDate, endDate);
-
+    const events = await getMajorEventsInRange(locationData.countryCode, startDate, endDate);
     const holidayText =
       holidays.length > 0
-        ? `Holidays: ${holidays.map((h) => `${h.name} (${h.date})`).join(", ")}.`
-        : "No major public holidays detected in range.";
-
+        ? `Holidays: ${holidays.map((h) => h.name).join(", ")}`
+        : "No major holidays during this period.";
     const eventText =
       events.length > 0
-        ? `Major Events: ${events
-            .map((e) => `${e.name} (${e.startDate} - ${e.endDate})`)
-            .join(", ")}.`
-        : "No major specific events noted in range.";
+        ? `Events: ${events.map((e) => e.name).join(", ")}`
+        : "No major events during this period.";
+
+    // Get school vacation periods
+    const schoolVacations = getSchoolVacationPeriods(startDate, endDate);
+    console.log("School Vacations:", schoolVacations);
+
+    // Get historical patterns based on the month
+    const startMonth = new Date(startDate).getMonth() + 1;
+    const historicalPatterns = getHistoricalPatterns(startMonth);
 
     // 4. Construct OpenAI Prompt
     const prompt = `
@@ -128,22 +133,42 @@ export async function POST(request) {
       - Weather Analysis: ${weatherSummary}
       - ${holidayText}
       - ${eventText}
-      - General Factors: Consider typical tourist seasons, school holidays (if applicable, e.g., North America/Europe summer), and general appeal of the location. Do not use flight/cruise data unless provided.
+      
+      School Vacation Periods:
+      ${schoolVacations}
+
+      Historical Patterns:
+      - Average temperatures for this period: ${historicalPatterns.temperature}
+      - Typical rainfall patterns: ${historicalPatterns.rainfall}
+      - Previous tourist demand levels: ${historicalPatterns.demand}
+      
+      General Factors:
+      - Peak tourist seasons
+      - School holidays in major source countries (US, Canada, UK, Europe)
+      - General appeal of the location
+      - Economic indicators
+      - Travel restrictions or advisories
+      - Flight availability and pricing trends
+      - Hotel occupancy patterns
 
       Task:
       1. Predict the general tourism demand level (impacting hotels, tours, attractions).
       2. Provide detailed reasoning that specifically addresses:
          - How weather conditions and trends will impact tourism
          - The influence of holidays and events
+         - Impact of school vacation periods in major source countries
          - Seasonal factors and general tourism patterns
+         - Historical weather and demand patterns
       3. Suggest specific pricing guidance based on:
          - Weather impact score and conditions
          - Demand level prediction
+         - School vacation periods
          - Local tourism patterns
          - Recommended percentage adjustment to base prices (e.g., +15%, -10%, etc.)
       4. Estimate your confidence in this forecast, considering:
          - Weather forecast reliability
          - Event/holiday certainty
+         - School vacation period overlap
          - Historical pattern consistency
 
       Output Format:
