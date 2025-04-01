@@ -34,8 +34,8 @@ function WeatherAnalysis({ data }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-4">Weather Analysis</h2>
+    <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Weather Analysis</h2>
       <div className="space-y-4">
         <div className={`p-4 rounded-lg ${getImpactColor(data.impactScore * 100)}`}>
           <h3 className="font-semibold">Weather Impact Score</h3>
@@ -120,8 +120,9 @@ function ForecastResult({ forecast, weatherAnalysis }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Left Column - Key Metrics */}
+      <div className="space-y-4">
         <div className={`p-4 rounded-lg ${getDemandColor(forecast.demandLevel)}`}>
           <h3 className="font-semibold">Demand Level</h3>
           <p className="text-lg">{forecast.demandLevel}</p>
@@ -139,25 +140,34 @@ function ForecastResult({ forecast, weatherAnalysis }) {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-2">Pricing Guidance</h3>
-        <p className="text-gray-700">{forecast.pricingGuidance}</p>
+      {/* Middle Column - Analysis */}
+      <div className="space-y-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-blue-100">
+          <h3 className="text-lg font-semibold mb-2">Analysis</h3>
+          <p className="text-gray-700">{forecast.reasoning}</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-blue-100">
+          <h3 className="text-lg font-semibold mb-2">Pricing Guidance</h3>
+          <p className="text-gray-700">{forecast.pricingGuidance}</p>
+        </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-2">Analysis</h3>
-        <p className="text-gray-700">{forecast.reasoning}</p>
+      {/* Right Column - Weather Analysis */}
+      <div className="space-y-4">
+        {weatherAnalysis && <WeatherAnalysis data={weatherAnalysis} />}
       </div>
-
-      {weatherAnalysis && <WeatherAnalysis data={weatherAnalysis} />}
     </div>
   );
 }
 
 export default function Home() {
   const [location, setLocation] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const today = new Date();
+  const nextWeek = new Date(today);
+  nextWeek.setDate(today.getDate() + 7);
+
+  const [startDate, setStartDate] = useState(today.toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(nextWeek.toISOString().split("T")[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [forecast, setForecast] = useState(null);
@@ -316,8 +326,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Results Area - Single Column */}
-        <div className="mt-8 max-w-2xl mx-auto">
+        {/* Results Area - Full Width */}
+        <div className="mt-8">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-6">
               {error}
@@ -330,7 +340,12 @@ export default function Home() {
             </div>
           )}
 
-          {forecast && <ForecastResult forecast={forecast} weatherAnalysis={weatherAnalysis} />}
+          {forecast && (
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">Forecast Results</h2>
+              <ForecastResult forecast={forecast} weatherAnalysis={weatherAnalysis} />
+            </div>
+          )}
         </div>
       </div>
     </main>

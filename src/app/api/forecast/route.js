@@ -186,7 +186,7 @@ export async function POST(request) {
       Respond ONLY with a valid JSON object with NO MARKDOWN formatting, containing these exact keys:
       - "demandLevel": string (Valid values: "Very Low", "Low", "Moderate", "High", "Very High")
       - "reasoning": string (Detailed explanation citing key factors)
-      - "pricingGuidance": string (Specific pricing advice based on weather and demand)
+      - "pricingGuidance": string (Specific pricing advice based on weather, demand, business profile, event details, and other factors)
       - "priceAdjustment": number (Recommended percentage adjustment to base prices, calculated based on analysis of all factors)
       - "confidenceScore": string (Valid values: "Low", "Medium", "High")
     `;
