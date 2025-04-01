@@ -164,7 +164,7 @@ export async function POST(request) {
          - Demand level prediction
          - School vacation periods
          - Local tourism patterns
-         - Recommended percentage adjustment to base prices (e.g., +15%, -10%, etc.)
+         - Calculate the optimal price adjustment percentage based on all factors
       4. Estimate your confidence in this forecast, considering:
          - Weather forecast reliability
          - Event/holiday certainty
@@ -176,7 +176,7 @@ export async function POST(request) {
       - "demandLevel": string (Valid values: "Very Low", "Low", "Moderate", "High", "Very High")
       - "reasoning": string (Detailed explanation citing key factors)
       - "pricingGuidance": string (Specific pricing advice based on weather and demand)
-      - "priceAdjustment": number (Recommended percentage adjustment to base prices, e.g., 15 for +15%, -10 for -10%)
+      - "priceAdjustment": number (Recommended percentage adjustment to base prices, calculated based on analysis of all factors)
       - "confidenceScore": string (Valid values: "Low", "Medium", "High")
     `;
 
