@@ -123,14 +123,11 @@ export async function POST(request) {
     const startMonth = new Date(startDate).getMonth() + 1;
     const historicalPatterns = getHistoricalPatterns(startMonth);
 
-    // Enhanced AI prompt with more sophisticated analysis
-    const prompt = `As an AI tourism demand forecasting expert, analyze the following data and provide a detailed forecast:
+    // Enhanced AI prompt with competitor analysis
+    const prompt = `You are an expert tourism and hospitality analyst. Analyze the following data and provide a detailed forecast:
 
 Location: ${location}
 Date Range: ${startDate} to ${endDate}
-
-Weather Analysis:
-${weatherSummary}
 
 Business Profile:
 ${businessProfile}
@@ -138,53 +135,52 @@ ${businessProfile}
 Event Details:
 ${eventDetails}
 
-Historical Patterns:
-${getHistoricalPatterns(new Date(startDate).getMonth() + 1)}
+Weather Analysis:
+${weatherSummary}
+
+Holidays and Events:
+${holidayText}
+${eventText}
 
 School Vacation Periods:
-${getSchoolVacationPeriods(startDate, endDate)}
+${schoolVacations}
 
-Please provide a comprehensive analysis in the following format:
+Historical Patterns:
+${historicalPatterns}
 
-1. Demand Level Prediction:
-   - Overall demand level (Very Low, Low, Moderate, High, Very High)
-   - Daily demand breakdown (if multiple days)
-   - Peak demand periods within the date range
+Your task is to:
+1. Predict tourism demand level (Very Low, Low, Moderate, High, Very High)
+2. Provide detailed reasoning based on:
+   - Weather conditions and impact
+   - School vacation periods
+   - Major holidays and events
+   - Historical patterns
+   - Business profile and location
+   - Competitor analysis
+3. Suggest pricing guidance with specific percentage adjustments:
+   - For peak times (holidays, school breaks, major events): Consider 30-50% increases
+   - For high demand periods: Consider 20-40% increases
+   - For moderate demand: Consider 10-30% increases
+   - For low demand: Consider 0-20% decreases
+4. Provide confidence score (0-100%)
+5. Include daily breakdown if multiple days
+6. Provide actionable recommendations for:
+   - Staffing
+   - Inventory
+   - Marketing
+   - Risk factors
+   - Competitive positioning
 
-2. Demand Factors Analysis:
-   - Weather Impact: How weather conditions affect demand
-   - Seasonal Factors: Impact of current season and historical patterns
-   - Event Impact: How the event affects demand (if applicable)
-   - Business Profile Impact: How business characteristics influence demand
-   - School Vacation Impact: How vacation periods affect demand
-
-3. Pricing Strategy:
-   - Recommended price adjustments (percentage)
-   - Dynamic pricing suggestions for different periods
-   - Special rate recommendations for specific dates
-   - Package deal suggestions
-
-4. Confidence Assessment:
-   - Overall confidence level (Low, Medium, High)
-   - Confidence breakdown by factor
-   - Risk factors and uncertainties
-
-5. Actionable Recommendations:
-   - Staffing suggestions
-   - Inventory management
-   - Marketing opportunities
-   - Risk mitigation strategies
-
-IMPORTANT: Your response must be a valid JSON object with the following structure. Include ALL fields:
+Format your response as a JSON object with the following structure:
 {
-  "demandLevel": "string (Very Low, Low, Moderate, High, or Very High)",
-  "reasoning": "string (detailed explanation)",
-  "pricingGuidance": "string (specific pricing advice)",
-  "confidenceScore": "string (Low, Medium, or High)",
-  "priceAdjustment": number (percentage adjustment, e.g., 10 for +10%, -5 for -5%),
+  "demandLevel": "string",
+  "reasoning": "string",
+  "pricingGuidance": "string",
+  "priceAdjustment": number,
+  "confidenceScore": number,
   "dailyBreakdown": [
     {
-      "date": "YYYY-MM-DD",
+      "date": "string",
       "demandLevel": "string",
       "priceAdjustment": number,
       "factors": ["string"]
@@ -194,11 +190,28 @@ IMPORTANT: Your response must be a valid JSON object with the following structur
     "staffing": ["string"],
     "inventory": ["string"],
     "marketing": ["string"],
-    "risks": ["string"]
+    "risks": ["string"],
+    "competitivePositioning": ["string"]
+  },
+  "competitorAnalysis": {
+    "marketPosition": "string",
+    "competitiveAdvantages": ["string"],
+    "marketOpportunities": ["string"],
+    "pricingStrategy": "string",
+    "targetMarketAlignment": "string"
   }
 }
 
-Note: The priceAdjustment field is required and must be a number representing the percentage adjustment (positive for increase, negative for decrease).`;
+Important pricing guidelines:
+- Peak season (holidays, school breaks): 30-50% increase
+- High demand periods: 20-40% increase
+- Moderate demand: 10-30% increase
+- Low demand: 0-20% decrease
+- Consider business profile strength and unique features
+- Factor in event exclusivity and limited capacity
+- Account for premium location and amenities
+- Consider competitor pricing in the area
+- Factor in weather impact on demand`;
 
     // 5. Call OpenAI API
     let forecastResult = null;
@@ -228,8 +241,8 @@ Note: The priceAdjustment field is required and must be a number representing th
           demandLevel: "string",
           reasoning: "string",
           pricingGuidance: "string",
-          confidenceScore: "string",
           priceAdjustment: "number",
+          confidenceScore: "number",
         };
 
         const missingFields = Object.entries(requiredFields).filter(
@@ -269,6 +282,11 @@ Note: The priceAdjustment field is required and must be a number representing th
             : [],
           risks: Array.isArray(forecastResult.recommendations?.risks)
             ? forecastResult.recommendations.risks
+            : [],
+          competitivePositioning: Array.isArray(
+            forecastResult.recommendations?.competitivePositioning
+          )
+            ? forecastResult.recommendations.competitivePositioning
             : [],
         };
       } catch (parseError) {
