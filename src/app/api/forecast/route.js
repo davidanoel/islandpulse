@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { openai } from "@/lib/openai";
 import { getHolidaysInRange, getMajorEventsInRange } from "@/lib/holidays";
 import { getHolidaysWithFallback } from "@/lib/googleCalendar";
+import { getWeatherAnalysis } from "@/lib/weatherAnalysis";
 
 const OPENWEATHERMAP_API_KEY = process.env.OPENWEATHERMAP_API_KEY;
 const CACHE_DURATION_HOURS = 6; // How long to cache results
@@ -26,6 +27,7 @@ const locations = {
 export async function POST(request) {
   try {
     const { location: locationKey, startDate, endDate } = await request.json();
+    console.log("API Request:", { locationKey, startDate, endDate }); // Debug log
 
     if (!locationKey || !startDate || !endDate) {
       return NextResponse.json(
@@ -67,20 +69,37 @@ export async function POST(request) {
     // --- If not cached or expired, proceed ---
 
     // 2. Fetch Weather Data
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${locationData.lat}&lon=${locationData.lon}&appid=${OPENWEATHERMAP_API_KEY}&units=metric`;
     let weatherSummary = "Weather data unavailable.";
+    let weatherAnalysis = null;
     try {
-      const weatherResponse = await fetch(weatherUrl);
-      if (!weatherResponse.ok) throw new Error(`Weather API Error: ${weatherResponse.statusText}`);
-      const weatherData = await weatherResponse.json();
-      const firstForecast = weatherData.list?.[0];
-      if (firstForecast) {
-        weatherSummary = `Sample forecast around start date: ${firstForecast.main.temp}°C, ${firstForecast.weather[0].description}. Precipitation chance varies.`;
+      console.log("Fetching weather analysis for location:", locationData);
+      weatherAnalysis = await getWeatherAnalysis(
+        locationData.lat,
+        locationData.lon,
+        startDate,
+        endDate
+      );
+      console.log("Weather Analysis Result:", weatherAnalysis);
+
+      if (weatherAnalysis) {
+        const { temperature, conditions, alerts, impactScore, trends } = weatherAnalysis;
+        weatherSummary = `Weather Analysis:
+          - Temperature: ${temperature.average.toFixed(1)}°C (${temperature.trend} trend)
+          - Range: ${temperature.min.toFixed(1)}°C to ${temperature.max.toFixed(1)}°C
+          - Dominant Conditions: ${conditions.dominant}
+          - Weather Impact Score: ${(impactScore * 100).toFixed(0)}%
+          - Weather Trends: ${Object.entries(trends)
+            .filter(([key]) => key !== "conditions")
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(", ")}
+          ${alerts.length > 0 ? `- Alerts: ${alerts.map((a) => a.message).join(", ")}` : ""}`;
       } else {
+        console.log("Weather analysis returned null");
         weatherSummary = "Could not retrieve detailed weather forecast.";
       }
     } catch (error) {
       console.error("Error fetching weather:", error.message);
+      weatherSummary = `Weather data unavailable: ${error.message}`;
     }
 
     // 3. Get Holidays & Events
@@ -99,29 +118,40 @@ export async function POST(request) {
             .join(", ")}.`
         : "No major specific events noted in range.";
 
-    // 4. Construct OpenAI Prompt (Same prompt as before)
+    // 4. Construct OpenAI Prompt
     const prompt = `
       You are an expert Caribbean tourism demand forecaster for ${locationData.name}.
       Analyze the following information for the period ${startDate} to ${endDate}.
 
       Context:
       - Location: ${locationData.name}
-      - Weather Summary: ${weatherSummary}
+      - Weather Analysis: ${weatherSummary}
       - ${holidayText}
       - ${eventText}
       - General Factors: Consider typical tourist seasons, school holidays (if applicable, e.g., North America/Europe summer), and general appeal of the location. Do not use flight/cruise data unless provided.
 
       Task:
-      Predict the general tourism demand level (impacting hotels, tours, attractions).
-      Provide reasoning based ONLY on the provided context and general knowledge of Caribbean tourism patterns.
-      Suggest basic pricing guidance.
-      Estimate your confidence in this forecast.
+      1. Predict the general tourism demand level (impacting hotels, tours, attractions).
+      2. Provide detailed reasoning that specifically addresses:
+         - How weather conditions and trends will impact tourism
+         - The influence of holidays and events
+         - Seasonal factors and general tourism patterns
+      3. Suggest specific pricing guidance based on:
+         - Weather impact score and conditions
+         - Demand level prediction
+         - Local tourism patterns
+         - Recommended percentage adjustment to base prices (e.g., +15%, -10%, etc.)
+      4. Estimate your confidence in this forecast, considering:
+         - Weather forecast reliability
+         - Event/holiday certainty
+         - Historical pattern consistency
 
       Output Format:
       Respond ONLY with a valid JSON object with NO MARKDOWN formatting, containing these exact keys:
       - "demandLevel": string (Valid values: "Very Low", "Low", "Moderate", "High", "Very High")
-      - "reasoning": string (Brief explanation citing key factors)
-      - "pricingGuidance": string (Simple advice: e.g., "Consider Discounts", "Maintain Base Rates", "Potential for Increase", "Strong Increase Recommended")
+      - "reasoning": string (Detailed explanation citing key factors)
+      - "pricingGuidance": string (Specific pricing advice based on weather and demand)
+      - "priceAdjustment": number (Recommended percentage adjustment to base prices, e.g., 15 for +15%, -10 for -10%)
       - "confidenceScore": string (Valid values: "Low", "Medium", "High")
     `;
 
@@ -154,6 +184,8 @@ export async function POST(request) {
           typeof forecastResult.reasoning !== "string" ||
           !forecastResult.pricingGuidance ||
           typeof forecastResult.pricingGuidance !== "string" ||
+          !forecastResult.priceAdjustment ||
+          typeof forecastResult.priceAdjustment !== "number" ||
           !forecastResult.confidenceScore ||
           typeof forecastResult.confidenceScore !== "string"
         ) {
@@ -172,19 +204,29 @@ export async function POST(request) {
     // 6. Store in Cache and Return
     if (forecastResult) {
       try {
+        // Include weather analysis in the response
+        const responseData = {
+          ...forecastResult,
+          weatherAnalysis: weatherAnalysis || null, // Ensure weatherAnalysis is included
+        };
+        console.log("Final API Response:", responseData);
+
+        // Store the complete response data in cache
         await cacheCollection.updateOne(
           { _id: cacheKey },
-          { $set: { forecast: forecastResult, timestamp: new Date() } },
+          { $set: { forecast: responseData, timestamp: new Date() } },
           { upsert: true }
         );
-        return NextResponse.json(forecastResult);
+        return NextResponse.json(responseData);
       } catch (dbError) {
         console.error("Error saving to cache:", dbError);
-        // Still return the forecast even if caching fails
-        return NextResponse.json(forecastResult);
+        // Return the complete response data even if caching fails
+        return NextResponse.json({
+          ...forecastResult,
+          weatherAnalysis: weatherAnalysis || null,
+        });
       }
     } else {
-      // Fallback if forecastResult is somehow null after checks
       return NextResponse.json({ error: "Failed to generate forecast." }, { status: 500 });
     }
   } catch (error) {
