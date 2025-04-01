@@ -123,85 +123,96 @@ export async function POST(request) {
     const startMonth = new Date(startDate).getMonth() + 1;
     const historicalPatterns = getHistoricalPatterns(startMonth);
 
-    // 4. Construct OpenAI Prompt
-    const prompt = `
-      You are an expert Caribbean tourism demand forecaster for ${locationData.name}.
-      Analyze the following information for the period ${startDate} to ${endDate}.
+    // Enhanced AI prompt with more sophisticated analysis
+    const prompt = `As an AI tourism demand forecasting expert, analyze the following data and provide a detailed forecast:
 
-      Context:
-      - Location: ${locationData.name}
-      - Weather Analysis: ${weatherSummary}
-      - ${holidayText}
-      - ${eventText}
-      
-      School Vacation Periods:
-      ${schoolVacations}
+Location: ${location}
+Date Range: ${startDate} to ${endDate}
 
-      Historical Patterns:
-      - Average temperatures for this period: ${historicalPatterns.temperature}
-      - Typical rainfall patterns: ${historicalPatterns.rainfall}
-      - Previous tourist demand levels: ${historicalPatterns.demand}
-      
-      Business Context:
-      ${businessProfile ? `Business Profile: ${businessProfile}` : "No business profile provided."}
-      
-      Event Context:
-      ${eventDetails ? `Event Details: ${eventDetails}` : "No event details provided."}
-      
-      General Factors:
-      - Peak tourist seasons
-      - School holidays in major source countries (US, Canada, UK, Europe)
-      - General appeal of the location
-      - Economic indicators
-      - Travel restrictions or advisories
-      - Flight availability and pricing trends
-      - Hotel occupancy patterns
+Weather Analysis:
+${weatherSummary}
 
-      Task:
-      1. Predict the general tourism demand level (impacting hotels, tours, attractions).
-      2. Provide detailed reasoning that specifically addresses:
-         - How weather conditions and trends will impact tourism
-         - The influence of holidays and events
-         - Impact of school vacation periods in major source countries
-         - Seasonal factors and general tourism patterns
-         - Historical weather and demand patterns
-         - Business-specific factors and their impact
-         - Event-specific factors and their impact
-      3. Suggest specific pricing guidance based on:
-         - Weather impact score and conditions
-         - Demand level prediction
-         - School vacation periods
-         - Local tourism patterns
-         - Business-specific features and positioning
-         - Event-specific considerations
-         - Calculate the optimal price adjustment percentage based on all factors
-      4. Estimate your confidence in this forecast, considering:
-         - Weather forecast reliability
-         - Event/holiday certainty
-         - School vacation period overlap
-         - Historical pattern consistency
-         - Business and event information completeness
+Business Profile:
+${businessProfile}
 
-      Output Format:
-      Respond ONLY with a valid JSON object with NO MARKDOWN formatting, containing these exact keys:
-      - "demandLevel": string (Valid values: "Very Low", "Low", "Moderate", "High", "Very High")
-      - "reasoning": string (Detailed explanation citing key factors)
-      - "pricingGuidance": string (Specific pricing advice based on weather, demand, business profile, event details, and other factors)
-      - "priceAdjustment": number (Recommended percentage adjustment to base prices, calculated based on analysis of all factors)
-      - "confidenceScore": string (Valid values: "Low", "Medium", "High")
-    `;
+Event Details:
+${eventDetails}
+
+Historical Patterns:
+${getHistoricalPatterns(new Date(startDate).getMonth() + 1)}
+
+School Vacation Periods:
+${getSchoolVacationPeriods(startDate, endDate)}
+
+Please provide a comprehensive analysis in the following format:
+
+1. Demand Level Prediction:
+   - Overall demand level (Very Low, Low, Moderate, High, Very High)
+   - Daily demand breakdown (if multiple days)
+   - Peak demand periods within the date range
+
+2. Demand Factors Analysis:
+   - Weather Impact: How weather conditions affect demand
+   - Seasonal Factors: Impact of current season and historical patterns
+   - Event Impact: How the event affects demand (if applicable)
+   - Business Profile Impact: How business characteristics influence demand
+   - School Vacation Impact: How vacation periods affect demand
+
+3. Pricing Strategy:
+   - Recommended price adjustments (percentage)
+   - Dynamic pricing suggestions for different periods
+   - Special rate recommendations for specific dates
+   - Package deal suggestions
+
+4. Confidence Assessment:
+   - Overall confidence level (Low, Medium, High)
+   - Confidence breakdown by factor
+   - Risk factors and uncertainties
+
+5. Actionable Recommendations:
+   - Staffing suggestions
+   - Inventory management
+   - Marketing opportunities
+   - Risk mitigation strategies
+
+IMPORTANT: Your response must be a valid JSON object with the following structure. Include ALL fields:
+{
+  "demandLevel": "string (Very Low, Low, Moderate, High, or Very High)",
+  "reasoning": "string (detailed explanation)",
+  "pricingGuidance": "string (specific pricing advice)",
+  "confidenceScore": "string (Low, Medium, or High)",
+  "priceAdjustment": number (percentage adjustment, e.g., 10 for +10%, -5 for -5%),
+  "dailyBreakdown": [
+    {
+      "date": "YYYY-MM-DD",
+      "demandLevel": "string",
+      "priceAdjustment": number,
+      "factors": ["string"]
+    }
+  ],
+  "recommendations": {
+    "staffing": ["string"],
+    "inventory": ["string"],
+    "marketing": ["string"],
+    "risks": ["string"]
+  }
+}
+
+Note: The priceAdjustment field is required and must be a number representing the percentage adjustment (positive for increase, negative for decrease).`;
 
     // 5. Call OpenAI API
-    let forecastResult = null; // Initialize as null
+    let forecastResult = null;
     try {
+      console.log("Sending prompt to OpenAI:", prompt);
       const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.3,
-        // response_format: { type: "json_object" }, // Check if model supports it
+        response_format: { type: "json_object" },
       });
 
       const responseContent = completion.choices[0]?.message?.content;
+      console.log("OpenAI Response:", responseContent);
 
       if (!responseContent) {
         throw new Error("OpenAI returned an empty response.");
@@ -210,64 +221,101 @@ export async function POST(request) {
       // Attempt to parse the JSON response
       try {
         forecastResult = JSON.parse(responseContent);
-        // **Runtime Check (Important in JS)**
-        if (
-          !forecastResult ||
-          typeof forecastResult !== "object" ||
-          !forecastResult.demandLevel ||
-          typeof forecastResult.demandLevel !== "string" ||
-          !forecastResult.reasoning ||
-          typeof forecastResult.reasoning !== "string" ||
-          !forecastResult.pricingGuidance ||
-          typeof forecastResult.pricingGuidance !== "string" ||
-          !forecastResult.priceAdjustment ||
-          typeof forecastResult.priceAdjustment !== "number" ||
-          !forecastResult.confidenceScore ||
-          typeof forecastResult.confidenceScore !== "string"
-        ) {
-          throw new Error("Parsed JSON missing required keys or has incorrect types.");
+        console.log("Parsed Forecast Result:", forecastResult);
+
+        // Validate required fields
+        const requiredFields = {
+          demandLevel: "string",
+          reasoning: "string",
+          pricingGuidance: "string",
+          confidenceScore: "string",
+          priceAdjustment: "number",
+        };
+
+        const missingFields = Object.entries(requiredFields).filter(
+          ([key, type]) => !forecastResult[key] || typeof forecastResult[key] !== type
+        );
+
+        if (missingFields.length > 0) {
+          console.error("Missing or invalid fields:", missingFields);
+          throw new Error(
+            `Missing or invalid fields: ${missingFields.map(([key]) => key).join(", ")}`
+          );
         }
+
+        // Ensure priceAdjustment is a number
+        if (typeof forecastResult.priceAdjustment !== "number") {
+          forecastResult.priceAdjustment = Number(forecastResult.priceAdjustment);
+          if (isNaN(forecastResult.priceAdjustment)) {
+            throw new Error("priceAdjustment must be a valid number");
+          }
+        }
+
+        // Ensure dailyBreakdown is an array if present
+        if (forecastResult.dailyBreakdown && !Array.isArray(forecastResult.dailyBreakdown)) {
+          forecastResult.dailyBreakdown = [];
+        }
+
+        // Ensure recommendations object exists with required arrays
+        forecastResult.recommendations = {
+          staffing: Array.isArray(forecastResult.recommendations?.staffing)
+            ? forecastResult.recommendations.staffing
+            : [],
+          inventory: Array.isArray(forecastResult.recommendations?.inventory)
+            ? forecastResult.recommendations.inventory
+            : [],
+          marketing: Array.isArray(forecastResult.recommendations?.marketing)
+            ? forecastResult.recommendations.marketing
+            : [],
+          risks: Array.isArray(forecastResult.recommendations?.risks)
+            ? forecastResult.recommendations.risks
+            : [],
+        };
       } catch (parseError) {
-        console.error("Failed to parse OpenAI JSON response:", responseContent, parseError);
+        console.error("Failed to parse OpenAI JSON response:", parseError);
+        console.error("Raw response:", responseContent);
         throw new Error(`Could not parse AI response: ${parseError.message}`);
       }
     } catch (error) {
       console.error("Error calling OpenAI:", error);
-      // Return error response (don't expose raw error details in production)
-      return NextResponse.json({ error: `AI processing failed.` }, { status: 500 });
+      return NextResponse.json(
+        { error: `AI processing failed: ${error.message}` },
+        { status: 500 }
+      );
     }
 
     // 6. Store in Cache and Return
     if (forecastResult) {
       try {
-        // Include weather analysis in the response
         const responseData = {
           ...forecastResult,
-          weatherAnalysis: weatherAnalysis || null, // Ensure weatherAnalysis is included
+          weatherAnalysis: weatherAnalysis || null,
         };
         console.log("Final API Response:", responseData);
 
-        // Store the complete response data in cache
+        // Store in cache
         await cacheCollection.updateOne(
           { _id: cacheKey },
           { $set: { forecast: responseData, timestamp: new Date() } },
           { upsert: true }
         );
+
         return NextResponse.json(responseData);
       } catch (dbError) {
         console.error("Error saving to cache:", dbError);
-        // Return the complete response data even if caching fails
         return NextResponse.json({
           ...forecastResult,
           weatherAnalysis: weatherAnalysis || null,
         });
       }
     } else {
-      return NextResponse.json({ error: "Failed to generate forecast." }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to generate forecast: No valid result" },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error("API Route Error:", error);
-    // Avoid exposing internal error messages directly
-    return NextResponse.json({ error: "An unexpected server error occurred." }, { status: 500 });
+    return NextResponse.json({ error: `Server error: ${error.message}` }, { status: 500 });
   }
 }
