@@ -27,8 +27,8 @@ const locations = {
 
 export async function POST(request) {
   try {
-    const { location, startDate, endDate } = await request.json();
-    console.log("API Request:", { location, startDate, endDate });
+    const { location, startDate, endDate, businessProfile, eventDetails } = await request.json();
+    console.log("API Request:", { location, startDate, endDate, businessProfile, eventDetails });
 
     if (!location || !startDate || !endDate) {
       return NextResponse.json(
@@ -142,6 +142,12 @@ export async function POST(request) {
       - Typical rainfall patterns: ${historicalPatterns.rainfall}
       - Previous tourist demand levels: ${historicalPatterns.demand}
       
+      Business Context:
+      ${businessProfile ? `Business Profile: ${businessProfile}` : "No business profile provided."}
+      
+      Event Context:
+      ${eventDetails ? `Event Details: ${eventDetails}` : "No event details provided."}
+      
       General Factors:
       - Peak tourist seasons
       - School holidays in major source countries (US, Canada, UK, Europe)
@@ -159,17 +165,22 @@ export async function POST(request) {
          - Impact of school vacation periods in major source countries
          - Seasonal factors and general tourism patterns
          - Historical weather and demand patterns
+         - Business-specific factors and their impact
+         - Event-specific factors and their impact
       3. Suggest specific pricing guidance based on:
          - Weather impact score and conditions
          - Demand level prediction
          - School vacation periods
          - Local tourism patterns
+         - Business-specific features and positioning
+         - Event-specific considerations
          - Calculate the optimal price adjustment percentage based on all factors
       4. Estimate your confidence in this forecast, considering:
          - Weather forecast reliability
          - Event/holiday certainty
          - School vacation period overlap
          - Historical pattern consistency
+         - Business and event information completeness
 
       Output Format:
       Respond ONLY with a valid JSON object with NO MARKDOWN formatting, containing these exact keys:

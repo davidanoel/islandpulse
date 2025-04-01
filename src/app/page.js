@@ -4,6 +4,7 @@
 import { useState } from "react"; // Removed FormEvent type
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import BusinessProfile from "@/components/BusinessProfile";
 
 // Helper for conditional class names (same as before)
 function cn(...inputs) {
@@ -154,31 +155,22 @@ function ForecastResult({ forecast, weatherAnalysis }) {
 }
 
 export default function Home() {
-  // Use useState without generic types
-  const [location, setLocation] = useState(locationOptions[0].value);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
-  const [endDate, setEndDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 7);
-    return date.toISOString().split("T")[0];
-  });
-  const [forecast, setForecast] = useState(null); // Initialize state with null
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [location, setLocation] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [forecast, setForecast] = useState(null);
   const [weatherAnalysis, setWeatherAnalysis] = useState(null);
+  const [businessProfile, setBusinessProfile] = useState("");
+  const [eventDetails, setEventDetails] = useState("");
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsLoading(true);
-    setError(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     setForecast(null);
     setWeatherAnalysis(null);
-
-    if (new Date(endDate) < new Date(startDate)) {
-      setError("End date cannot be before start date.");
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const response = await fetch("/api/forecast", {
@@ -186,140 +178,161 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ location, startDate, endDate }),
+        body: JSON.stringify({
+          location,
+          startDate,
+          endDate,
+          businessProfile,
+          eventDetails,
+        }),
       });
 
       const data = await response.json();
-      console.log("API Response:", data); // Debug log
+      console.log("API Response:", data);
 
       if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        throw new Error(data.error || "Failed to fetch forecast");
       }
 
-      // Basic check if data looks like expected forecast
-      if (data && data.demandLevel && data.reasoning) {
-        console.log("Weather Analysis from API:", data.weatherAnalysis); // Debug log
-        setForecast(data);
-        setWeatherAnalysis(data.weatherAnalysis);
-        console.log("Weather Analysis State:", data.weatherAnalysis); // Debug log
-      } else {
-        throw new Error("Received invalid forecast data from server.");
-      }
+      setForecast(data);
+      setWeatherAnalysis(data.weatherAnalysis);
     } catch (err) {
-      setError(err.message || "An unknown error occurred.");
-      console.error(err);
+      setError(err.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // Add debug log for weatherAnalysis state
-  console.log("Current weatherAnalysis state:", weatherAnalysis);
-
-  // --- JSX remains largely the same as the TypeScript version ---
-  // Ensure all type-related syntax is removed if any existed in JSX attributes (usually not the case)
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="z-10 w-full max-w-3xl items-center justify-between font-mono text-sm lg:flex mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 text-center lg:text-left w-full">
-          Caribbean Demand Forecaster
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
+          IslandPulse Tourism Forecast
         </h1>
-      </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-lg shadow-xl p-6 md:p-8">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Location Input */}
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-              Location
-            </label>
-            <select
-              id="location"
-              name="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm"
-            >
-              {locationOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column - Forecast Form */}
+          <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Get Your Forecast</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Location Input */}
+              <div>
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                  Location
+                </label>
+                <select
+                  id="location"
+                  name="location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                >
+                  <option value="">Select a location</option>
+                  {locationOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Date Inputs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="startDate"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    required
+                    className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    required
+                    className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={cn(
+                    "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                    loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                  )}
+                >
+                  {loading ? "Analyzing..." : "Get Forecast"}
+                </button>
+              </div>
+            </form>
           </div>
 
-          {/* Date Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
-              </label>
-              <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                required
-                className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm"
-              />
+          {/* Right Column - Business Profile & Events */}
+          <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Business Profile & Events</h2>
+            <div className="space-y-4">
+              <div>
+                <div className="text-sm text-gray-500 mb-2">Describe your business, including:</div>
+                <textarea
+                  value={businessProfile}
+                  onChange={(e) => setBusinessProfile(e.target.value)}
+                  className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  placeholder="Example: Our 4-star beachfront hotel in Montego Bay features 200 rooms, 3 pools, and a private beach. Located 15 minutes from the airport, we offer luxury amenities including spa, multiple restaurants, and water sports. Our target market is upscale travelers seeking a premium Caribbean experience. Unique features include an infinity pool overlooking the ocean and exclusive beach cabanas."
+                />
+              </div>
+
+              <div>
+                <div className="text-sm text-gray-500 mb-2">Describe your event, including:</div>
+                <textarea
+                  value={eventDetails}
+                  onChange={(e) => setEventDetails(e.target.value)}
+                  className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  placeholder="Example: Annual Food & Wine Festival, June 15-17, 2024. Expected attendance: 5,000 visitors (70% tourists, 30% locals). Features include cooking demonstrations, wine tastings, and local food vendors. Special requirements: outdoor venue with covered areas, parking for 1,000 vehicles. Pricing considerations: early bird discounts, VIP packages, and group rates available."
+                />
+              </div>
             </div>
-            <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                End Date
-              </label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                required
-                className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm"
-              />
-            </div>
           </div>
-
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={cn(
-                "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
-                isLoading ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
-              )}
-            >
-              {isLoading ? "Analyzing..." : "Get Forecast"}
-            </button>
-          </div>
-        </form>
-
-        {/* Results Area */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-6">
-            {error}
-          </div>
-        )}
-
-        {isLoading && (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          </div>
-        )}
-
-        {/* Add debug display */}
-        <div className="mt-4 p-4 bg-gray-100 rounded">
-          <p>Weather Analysis State: {weatherAnalysis ? "Present" : "Not Present"}</p>
         </div>
 
-        {forecast && <ForecastResult forecast={forecast} weatherAnalysis={weatherAnalysis} />}
+        {/* Results Area - Single Column */}
+        <div className="mt-8 max-w-2xl mx-auto">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-6">
+              {error}
+            </div>
+          )}
+
+          {loading && (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            </div>
+          )}
+
+          {forecast && <ForecastResult forecast={forecast} weatherAnalysis={weatherAnalysis} />}
+        </div>
       </div>
-      <footer className="mt-8 text-center text-xs text-gray-500">
-        MVP - Uses public weather, holidays, and AI general knowledge. Does not include
-        flight/cruise data. Accuracy may vary.
-      </footer>
     </main>
   );
 }
