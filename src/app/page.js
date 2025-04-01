@@ -215,118 +215,136 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
           IslandPulse Tourism Forecast
         </h1>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Forecast Form */}
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Get Your Forecast</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Location Input */}
-              <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
-                </label>
-                <select
-                  id="location"
-                  name="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
-                >
-                  <option value="">Select a location</option>
-                  {locationOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Date Inputs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Main Content Grid - 3 Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column - Core Inputs (4 columns) */}
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100 sticky top-8">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Forecast Parameters</h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Location Input */}
                 <div>
                   <label
-                    htmlFor="startDate"
+                    htmlFor="location"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Start Date
+                    Location
                   </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    name="startDate"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    required
-                    className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
-                  />
+                  <select
+                    id="location"
+                    name="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                  >
+                    <option value="">Select a location</option>
+                    {locationOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div>
-                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    name="endDate"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    required
-                    className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
-                  />
-                </div>
-              </div>
 
-              {/* Submit Button */}
-              <div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={cn(
-                    "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
-                    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-                    loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                  )}
-                >
-                  {loading ? "Analyzing..." : "Get Forecast"}
-                </button>
-              </div>
-            </form>
+                {/* Date Inputs */}
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="startDate"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      name="startDate"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      required
+                      className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="endDate"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      name="endDate"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      required
+                      className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={cn(
+                      "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                      loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                    )}
+                  >
+                    {loading ? "Analyzing..." : "Get Forecast"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
 
-          {/* Right Column - Business Profile & Events */}
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Business Profile & Events</h2>
-            <div className="space-y-4">
-              <div>
-                <div className="text-sm text-gray-500 mb-2">Describe your business, including:</div>
-                <textarea
-                  value={businessProfile}
-                  onChange={(e) => setBusinessProfile(e.target.value)}
-                  className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                  placeholder="Example: Our 4-star beachfront hotel in Montego Bay features 200 rooms, 3 pools, and a private beach. Located 15 minutes from the airport, we offer luxury amenities including spa, multiple restaurants, and water sports. Our target market is upscale travelers seeking a premium Caribbean experience. Unique features include an infinity pool overlooking the ocean and exclusive beach cabanas."
-                />
+          {/* Middle Column - Business Profile (4 columns) */}
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Business Profile</h2>
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm text-gray-500 mb-2">Describe your business:</div>
+                  <textarea
+                    value={businessProfile}
+                    onChange={(e) => setBusinessProfile(e.target.value)}
+                    className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    placeholder="Example: Our 4-star beachfront hotel in Montego Bay features 200 rooms, 3 pools, and a private beach. Located 15 minutes from the airport, we offer luxury amenities including spa, multiple restaurants, and water sports."
+                  />
+                </div>
               </div>
+            </div>
+          </div>
 
-              <div>
-                <div className="text-sm text-gray-500 mb-2">Describe your event, including:</div>
-                <textarea
-                  value={eventDetails}
-                  onChange={(e) => setEventDetails(e.target.value)}
-                  className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                  placeholder="Example: Annual Food & Wine Festival, June 15-17, 2024. Expected attendance: 5,000 visitors (70% tourists, 30% locals). Features include cooking demonstrations, wine tastings, and local food vendors. Special requirements: outdoor venue with covered areas, parking for 1,000 vehicles. Pricing considerations: early bird discounts, VIP packages, and group rates available."
-                />
+          {/* Right Column - Events (4 columns) */}
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Events</h2>
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm text-gray-500 mb-2">Describe your event:</div>
+                  <textarea
+                    value={eventDetails}
+                    onChange={(e) => setEventDetails(e.target.value)}
+                    className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    placeholder="Example: Annual Food & Wine Festival, June 15-17, 2024. Expected attendance: 5,000 visitors (70% tourists, 30% locals). Features include cooking demonstrations, wine tastings, and local food vendors."
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Results Area - Full Width */}
+        {/* Results Area - Full Width Below */}
         <div className="mt-8">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-6">
