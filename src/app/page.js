@@ -99,7 +99,12 @@ export default function Home() {
                   </h1>
                 </div>
               </div>
-              <p className="text-xl text-gray-600 font-medium">Caribbean Tourism Forecast</p>
+              <p className="text-xl text-gray-600 font-medium text-center max-w-2xl mx-auto">
+                Caribbean Tourism Forecast
+                <span className="block text-sm text-gray-500 mt-1">
+                  Powered by advanced AI to analyze weather, events, and market trends
+                </span>
+              </p>
             </div>
 
             {/* Main Content Grid - 3 Column Layout */}
