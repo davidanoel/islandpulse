@@ -79,27 +79,41 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container mx-auto p-4">
-        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+      <div className="container mx-auto p-2 sm:p-4">
+        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 sm:p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col items-center mb-12">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+            <div className="flex flex-col items-center mb-8 sm:mb-12">
+              <div className="flex items-center space-x-2 sm:space-x-4 mb-4">
+                <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
                   <svg
-                    className="w-8 h-8 text-white animate-pulse"
-                    fill="currentColor"
+                    className="w-6 h-6 sm:w-8 sm:h-8 text-white animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    {/* Pulse line */}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 12h4l3 8 4-16 3 8h4"
+                    />
+                    {/* Chart line */}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 20h18"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                  <h1 className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                     IslandPulse
                   </h1>
                 </div>
               </div>
-              <p className="text-xl text-gray-600 font-medium text-center max-w-2xl mx-auto">
+              <p className="text-lg sm:text-xl text-gray-600 font-medium text-center max-w-2xl mx-auto">
                 Caribbean Tourism Forecast
                 <span className="block text-sm text-gray-500 mt-1">
                   Powered by advanced AI to analyze weather, events, and market trends
@@ -107,15 +121,15 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Main Content Grid - 3 Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Left Column - Core Inputs (4 columns) */}
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
+              {/* Left Column - Core Inputs */}
               <div className="lg:col-span-4">
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100 sticky top-8">
-                  <div className="flex items-center mb-6">
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-blue-100 sticky top-4 sm:top-8">
+                  <div className="flex items-center mb-4 sm:mb-6">
                     <div className="p-2 bg-blue-50 rounded-lg mr-3">
                       <svg
-                        className="w-6 h-6 text-blue-600"
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -128,11 +142,11 @@ export default function Home() {
                         />
                       </svg>
                     </div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                       Forecast Parameters
                     </h2>
                   </div>
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                     {/* Location Input */}
                     <div>
                       <label
@@ -146,7 +160,7 @@ export default function Home() {
                         name="location"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white"
                         required
                       >
                         <option value="">Select a location</option>
@@ -159,7 +173,7 @@ export default function Home() {
                     </div>
 
                     {/* Date Inputs */}
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
                         <label
                           htmlFor="startDate"
@@ -174,7 +188,7 @@ export default function Home() {
                           value={startDate}
                           onChange={(e) => setStartDate(e.target.value)}
                           required
-                          className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                          className="mt-1 block w-full pl-3 pr-3 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white"
                         />
                       </div>
                       <div>
@@ -191,7 +205,7 @@ export default function Home() {
                           value={endDate}
                           onChange={(e) => setEndDate(e.target.value)}
                           required
-                          className="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+                          className="mt-1 block w-full pl-3 pr-3 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white"
                         />
                       </div>
                     </div>
@@ -202,7 +216,7 @@ export default function Home() {
                         type="submit"
                         disabled={loading}
                         className={cn(
-                          "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
+                          "w-full flex justify-center py-2.5 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm sm:text-base font-medium text-white",
                           "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
                           loading
                             ? "bg-blue-300 cursor-not-allowed"
@@ -216,13 +230,13 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Middle Column - Business Profile (4 columns) */}
+              {/* Middle Column - Business Profile */}
               <div className="lg:col-span-4">
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
-                  <div className="flex items-center mb-6">
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-blue-100">
+                  <div className="flex items-center mb-4 sm:mb-6">
                     <div className="p-2 bg-blue-50 rounded-lg mr-3">
                       <svg
-                        className="w-6 h-6 text-blue-600"
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -235,17 +249,17 @@ export default function Home() {
                         />
                       </svg>
                     </div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                       Business Profile
                     </h2>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
                       <div className="text-sm text-gray-500 mb-2">Describe your business:</div>
                       <textarea
                         value={businessProfile}
                         onChange={(e) => setBusinessProfile(e.target.value)}
-                        className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        className="w-full h-32 sm:h-48 p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                         placeholder="Example: Our 4-star beachfront hotel in Montego Bay features 200 rooms, 3 pools, and a private beach. Located 15 minutes from the airport, we offer luxury amenities including spa, multiple restaurants, and water sports."
                       />
                     </div>
@@ -253,13 +267,13 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Column - Events (4 columns) */}
+              {/* Right Column - Events */}
               <div className="lg:col-span-4">
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
-                  <div className="flex items-center mb-6">
+                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-blue-100">
+                  <div className="flex items-center mb-4 sm:mb-6">
                     <div className="p-2 bg-blue-50 rounded-lg mr-3">
                       <svg
-                        className="w-6 h-6 text-blue-600"
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -272,17 +286,17 @@ export default function Home() {
                         />
                       </svg>
                     </div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                       Events
                     </h2>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
                       <div className="text-sm text-gray-500 mb-2">Describe your event:</div>
                       <textarea
                         value={eventDetails}
                         onChange={(e) => setEventDetails(e.target.value)}
-                        className="w-full h-48 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        className="w-full h-32 sm:h-48 p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                         placeholder="Example: Annual Food & Wine Festival, June 15-17, 2024. Expected attendance: 5,000 visitors (70% tourists, 30% locals). Features include cooking demonstrations, wine tastings, and local food vendors."
                       />
                     </div>
@@ -293,7 +307,7 @@ export default function Home() {
 
             {/* Results Section */}
             {forecast && (
-              <div className="mt-8">
+              <div className="mt-6 sm:mt-8">
                 <ForecastResult forecast={forecast} weatherAnalysis={weatherAnalysis} />
               </div>
             )}
