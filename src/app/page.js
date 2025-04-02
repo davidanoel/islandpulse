@@ -255,11 +255,11 @@ export default function Home() {
                   </div>
                   <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <div className="text-sm text-gray-500 mb-2">Describe your business:</div>
+                      <div className="text-sm text-gray-700 mb-2">Describe your business:</div>
                       <textarea
                         value={businessProfile}
                         onChange={(e) => setBusinessProfile(e.target.value)}
-                        className="w-full h-32 sm:h-48 p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        className="w-full h-32 sm:h-48 p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder:text-gray-600"
                         placeholder="Example: Our 4-star beachfront hotel in Montego Bay features 200 rooms, 3 pools, and a private beach. Located 15 minutes from the airport, we offer luxury amenities including spa, multiple restaurants, and water sports."
                       />
                     </div>
@@ -292,11 +292,11 @@ export default function Home() {
                   </div>
                   <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <div className="text-sm text-gray-500 mb-2">Describe your event:</div>
+                      <div className="text-sm text-gray-700 mb-2">Describe your event:</div>
                       <textarea
                         value={eventDetails}
                         onChange={(e) => setEventDetails(e.target.value)}
-                        className="w-full h-32 sm:h-48 p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        className="w-full h-32 sm:h-48 p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white placeholder:text-gray-600"
                         placeholder="Example: Annual Food & Wine Festival, June 15-17, 2024. Expected attendance: 5,000 visitors (70% tourists, 30% locals). Features include cooking demonstrations, wine tastings, and local food vendors."
                       />
                     </div>
