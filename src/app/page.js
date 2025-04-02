@@ -1,10 +1,9 @@
 // src/app/page.jsx
 "use client"; // Still needed for client components
 
-import { useState } from "react"; // Removed FormEvent type
+import { useState } from "react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import BusinessProfile from "@/components/BusinessProfile";
 
 // Helper for conditional class names (same as before)
 function cn(...inputs) {
@@ -18,10 +17,7 @@ const locationOptions = [
   { value: "bridgetown", label: "Bridgetown, Barbados" },
   { value: "nassau", label: "Nassau, Bahamas" },
   { value: "port_of_spain", label: "Port of Spain, Trinidad & Tobago" },
-  // Add the same locations as in the backend...
 ];
-
-// No ForecastResult interface needed
 
 // Weather Analysis Component
 function WeatherAnalysis({ data }) {
@@ -357,14 +353,6 @@ export default function Home() {
     setWeatherAnalysis(null);
 
     try {
-      console.log("Sending request with data:", {
-        location,
-        startDate,
-        endDate,
-        businessProfile,
-        eventDetails,
-      });
-
       const response = await fetch("/api/forecast", {
         method: "POST",
         headers: {
@@ -380,7 +368,6 @@ export default function Home() {
       });
 
       const data = await response.json();
-      console.log("API Response:", data);
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch forecast");
