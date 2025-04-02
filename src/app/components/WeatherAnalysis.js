@@ -32,6 +32,10 @@ export default function WeatherAnalysis({ data }) {
               {(data.impactScore * 100).toFixed(0)}%
             </span>
           </div>
+          <div className="text-sm text-gray-600 mb-2">
+            This score indicates how favorable the weather conditions are for tourism activities
+            during the forecast period.
+          </div>
           <div className="w-full bg-blue-200 rounded-full h-2">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-500"

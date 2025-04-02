@@ -1,7 +1,8 @@
 import WeatherAnalysis from "./WeatherAnalysis";
 import CompetitorAnalysis from "./CompetitorAnalysis";
 
-export default function ForecastResult({ forecast, weatherAnalysis }) {
+export default function ForecastResult({ forecast, weatherAnalysis, businessProfile }) {
+  console.log(forecast);
   if (!forecast) return null;
 
   const getDemandColor = (level) => {
@@ -206,7 +207,7 @@ export default function ForecastResult({ forecast, weatherAnalysis }) {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold">Analysis</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Analysis</h3>
             </div>
             <p className="text-gray-700 leading-relaxed">{forecast.reasoning}</p>
           </div>
@@ -227,7 +228,7 @@ export default function ForecastResult({ forecast, weatherAnalysis }) {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold">Pricing Guidance</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Pricing Guidance</h3>
             </div>
             <p className="text-gray-700 leading-relaxed">{forecast.pricingGuidance}</p>
           </div>
@@ -252,7 +253,7 @@ export default function ForecastResult({ forecast, weatherAnalysis }) {
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold">Recommendations</h3>
+                <h3 className="text-lg font-semibold text-gray-800">Recommendations</h3>
               </div>
               <div className="space-y-6">
                 {forecast.recommendations.staffing && (
@@ -473,7 +474,12 @@ export default function ForecastResult({ forecast, weatherAnalysis }) {
         {weatherAnalysis && <WeatherAnalysis data={weatherAnalysis} />}
 
         {/* Competitor Analysis */}
-        {forecast.competitorAnalysis && <CompetitorAnalysis data={forecast.competitorAnalysis} />}
+        {forecast.competitorAnalysis && (
+          <CompetitorAnalysis
+            businessProfile={businessProfile}
+            data={forecast.competitorAnalysis}
+          />
+        )}
       </div>
     </div>
   );

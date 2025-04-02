@@ -1,4 +1,4 @@
-export default function CompetitorAnalysis({ data }) {
+export default function CompetitorAnalysis({ businessProfile, data }) {
   if (!data) return null;
 
   return (
@@ -21,6 +21,33 @@ export default function CompetitorAnalysis({ data }) {
         </div>
         <h2 className="text-xl font-semibold text-gray-800">Competitor Analysis</h2>
       </div>
+      {!businessProfile && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+          <div className="flex items-start">
+            <svg
+              className="w-5 h-5 text-yellow-500 mr-2 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div>
+              <h3 className="text-sm font-medium text-yellow-800">Business Profile Required</h3>
+              <p className="text-sm text-yellow-700 mt-1">
+                To get accurate competitor analysis, please provide your business profile in the
+                form above. This helps us understand your specific business and provide more
+                relevant insights.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="space-y-4">
         {/* Market Position */}
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 shadow-sm">
@@ -37,7 +64,9 @@ export default function CompetitorAnalysis({ data }) {
                 width: `${
                   data.marketPosition === "Leader"
                     ? 100
-                    : data.marketPosition === "Challenger"
+                    : data.marketPosition === "Strong"
+                    ? 90
+                    : data.marketPosition === "Challenger" || data.marketPosition === "Competitive"
                     ? 75
                     : data.marketPosition === "Follower"
                     ? 50
@@ -80,11 +109,14 @@ export default function CompetitorAnalysis({ data }) {
           <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3">
             Market Opportunities
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-3">
             {data.marketOpportunities.map((opportunity, index) => (
-              <div key={index} className="bg-white rounded-lg p-2 shadow-sm flex items-center">
+              <div
+                key={index}
+                className="bg-white rounded-lg p-3 shadow-sm flex items-start flex-1 min-w-[200px]"
+              >
                 <svg
-                  className="w-4 h-4 text-blue-500 mr-2"
+                  className="w-4 h-4 text-blue-500 mr-2 mt-1 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -96,7 +128,7 @@ export default function CompetitorAnalysis({ data }) {
                     d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                   />
                 </svg>
-                <span className="text-gray-700">{opportunity}</span>
+                <span className="text-gray-700 text-sm sm:text-base">{opportunity}</span>
               </div>
             ))}
           </div>
@@ -108,7 +140,6 @@ export default function CompetitorAnalysis({ data }) {
             Pricing Strategy
           </h3>
           <div className="bg-white rounded-lg p-3 shadow-sm border border-blue-200">
-            <div className="text-sm text-gray-600 mb-1">Recommended Strategy</div>
             <div className="text-lg font-bold text-blue-600 flex items-center">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -129,7 +160,6 @@ export default function CompetitorAnalysis({ data }) {
             Target Market Alignment
           </h3>
           <div className="bg-white rounded-lg p-3 shadow-sm border border-blue-200">
-            <div className="text-sm text-gray-600 mb-1">Primary Target</div>
             <div className="text-lg font-bold text-blue-600 flex items-center">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

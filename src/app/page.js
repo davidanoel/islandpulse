@@ -160,7 +160,7 @@ export default function Home() {
                         name="location"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white"
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white text-gray-900"
                         required
                       >
                         <option value="">Select a location</option>
@@ -188,7 +188,7 @@ export default function Home() {
                           value={startDate}
                           onChange={(e) => setStartDate(e.target.value)}
                           required
-                          className="mt-1 block w-full pl-3 pr-3 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white"
+                          className="mt-1 block w-full pl-3 pr-3 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white text-gray-900"
                         />
                       </div>
                       <div>
@@ -205,7 +205,7 @@ export default function Home() {
                           value={endDate}
                           onChange={(e) => setEndDate(e.target.value)}
                           required
-                          className="mt-1 block w-full pl-3 pr-3 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white"
+                          className="mt-1 block w-full pl-3 pr-3 py-2 text-sm sm:text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm bg-white text-gray-900"
                         />
                       </div>
                     </div>
@@ -308,7 +308,11 @@ export default function Home() {
             {/* Results Section */}
             {forecast && (
               <div className="mt-6 sm:mt-8">
-                <ForecastResult forecast={forecast} weatherAnalysis={weatherAnalysis} />
+                <ForecastResult
+                  forecast={forecast}
+                  weatherAnalysis={weatherAnalysis}
+                  businessProfile={businessProfile}
+                />
               </div>
             )}
           </div>
