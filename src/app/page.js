@@ -144,11 +144,8 @@ export default function Home() {
                   </h1>
                 </div>
               </div>
-              <p className="text-lg sm:text-xl text-gray-600 font-medium text-center max-w-2xl mx-auto">
-                Caribbean Tourism Forecast
-                <span className="block text-sm text-gray-500 mt-1">
-                  Powered by advanced AI to analyze weather, events, and market trends
-                </span>
+              <p className="text-lg sm:text-lg text-gray-600 font-medium text-center max-w-2xl mx-auto">
+                Unlock AI-Powered Predictions to Boost Your Caribbean Tourism Business
               </p>
             </div>
 
@@ -638,6 +635,10 @@ export default function Home() {
               </div>
             )}
           </div>
+          <footer className="text-center text-sm text-gray-500 mt-8">
+            <p>Powered by advanced AI to analyze weather, events, and market trends</p>
+            <p className="mt-2">© 2024 IslandPulse. All rights reserved.</p>
+          </footer>
         </main>
       </div>
     </div>
