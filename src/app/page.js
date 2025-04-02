@@ -82,16 +82,55 @@ export default function Home() {
       <div className="container mx-auto p-4">
         <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
-              IslandPulse Tourism Forecast
-            </h1>
+            <div className="flex flex-col items-center mb-12">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                    />
+                  </svg>
+                </div>
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                  IslandPulse
+                </h1>
+              </div>
+              <p className="text-xl text-gray-600 font-medium">Caribbean Tourism Forecast</p>
+            </div>
 
             {/* Main Content Grid - 3 Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Left Column - Core Inputs (4 columns) */}
               <div className="lg:col-span-4">
                 <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100 sticky top-8">
-                  <h2 className="text-xl font-bold mb-4 text-gray-800">Forecast Parameters</h2>
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 bg-blue-50 rounded-lg mr-3">
+                      <svg
+                        className="w-6 h-6 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                      Forecast Parameters
+                    </h2>
+                  </div>
                   <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Location Input */}
                     <div>
@@ -178,7 +217,26 @@ export default function Home() {
               {/* Middle Column - Business Profile (4 columns) */}
               <div className="lg:col-span-4">
                 <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
-                  <h2 className="text-xl font-bold mb-4 text-gray-800">Business Profile</h2>
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 bg-blue-50 rounded-lg mr-3">
+                      <svg
+                        className="w-6 h-6 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                        />
+                      </svg>
+                    </div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                      Business Profile
+                    </h2>
+                  </div>
                   <div className="space-y-4">
                     <div>
                       <div className="text-sm text-gray-500 mb-2">Describe your business:</div>
@@ -196,7 +254,26 @@ export default function Home() {
               {/* Right Column - Events (4 columns) */}
               <div className="lg:col-span-4">
                 <div className="bg-white rounded-lg shadow-lg p-6 border border-blue-100">
-                  <h2 className="text-xl font-bold mb-4 text-gray-800">Events</h2>
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 bg-blue-50 rounded-lg mr-3">
+                      <svg
+                        className="w-6 h-6 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                      Events
+                    </h2>
+                  </div>
                   <div className="space-y-4">
                     <div>
                       <div className="text-sm text-gray-500 mb-2">Describe your event:</div>
