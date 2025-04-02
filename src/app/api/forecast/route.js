@@ -138,7 +138,7 @@ ${eventDetails}
 Weather Analysis:
 ${weatherSummary}
 
-Holidays and Events:
+Known Events and Holidays:
 ${holidayText}
 ${eventText}
 
@@ -153,7 +153,8 @@ Your task is to:
 2. Provide detailed reasoning based on:
    - Weather conditions and impact
    - School vacation periods
-   - Major holidays and events
+   - Known holidays and events
+   - Location-specific events and festivals
    - Historical patterns
    - Business profile and location
    - Competitor analysis
@@ -183,7 +184,8 @@ Format your response as a JSON object with the following structure:
       "date": "string",
       "demandLevel": "string",
       "priceAdjustment": number,
-      "factors": ["string"]
+      "factors": ["string"],
+      "events": ["string"]  // Include both known and location-specific events
     }
   ],
   "recommendations": {
@@ -211,7 +213,8 @@ Important pricing guidelines:
 - Factor in event exclusivity and limited capacity
 - Account for premium location and amenities
 - Consider competitor pricing in the area
-- Factor in weather impact on demand`;
+- Factor in weather impact on demand
+- Consider both known events and location-specific events when determining demand levels and price adjustments`;
 
     // 5. Call OpenAI API
     let forecastResult = null;
