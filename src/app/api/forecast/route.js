@@ -25,6 +25,8 @@ const locations = {
   // Add many more locations...
 };
 
+export const maxDuration = 30;
+
 export async function POST(request) {
   try {
     const { location, startDate, endDate, businessProfile, eventDetails } = await request.json();
